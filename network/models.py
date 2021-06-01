@@ -6,6 +6,10 @@ from django.db import models
 class CustomUser(AbstractUser):
     following = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="followers")
     deleted=models.DateTimeField(null=True, blank=True)
+    class Meta:
+        constraints = [
+            models.CheckConstraint(check=settings.AUTH_USER_MODEL.objects.exclude(following__exact=id), name='age_gte_18'),
+        ]
     def __str__(self):
         return f"{self.id} - {self.username} {self.email}"
 
