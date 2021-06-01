@@ -6,7 +6,7 @@ from django.db import models
 class CustomUser(AbstractUser):
     following = models.ManyToManyField('self', blank=True, related_name="followers")
     deleted=models.DateTimeField(null=True, blank=True)
-    def clean(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
        if self.following == self.id:
            raise Exception("Users cannot follow themselves.")
        super(self, CustomUser).save(*args, **kwargs)
