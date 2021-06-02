@@ -4,7 +4,7 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
-    following = models.ManyToManyField('self', blank=True, related_name="followers")
+    following = models.ManyToManyField('self', blank=True, related_name="followers", symmetrical=False)
     deleted=models.DateTimeField(null=True, blank=True)
     def save(self, *args, **kwargs):
        if self.following == self.id:
