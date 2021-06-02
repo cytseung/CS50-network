@@ -1,15 +1,19 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class CustomUser(AbstractUser):
     following = models.ManyToManyField('self', blank=True, related_name="followers", symmetrical=False)
     deleted=models.DateTimeField(null=True, blank=True)
-    def save(self, *args, **kwargs):
-       if self.following == self.id:
-           raise Exception("Users cannot follow themselves.")
-       super(self, CustomUser).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #    if self.following == self.id:
+    #        raise Exception("Users cannot follow themselves.")
+    #    super(self, CustomUser).save(*args, **kwargs)
+    def clean(self):
+        if self.following == self.id:
+            raise ValidationError({'following':'Users cannot follow themselves'})
     def __str__(self):
         return f"{self.id} - {self.username} {self.email}"
 
