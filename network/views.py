@@ -33,19 +33,7 @@ class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = PostSerializer
     # searchfields = ('user', )
 
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        if self.action == 'list':
-            # if action is 'list', users need to be authenticated for unsafe methods
-            # anonymous users can read only
-            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-        else:
-            # if action is not 'list', users need to be either the owner or admin for unsafe methods
-            # everyone else is read only
-            permission_classes = [IsOwnerOrReadOnly|permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
+    permission_classes = [IsOwnerOrReadOnly]
 
     @action(detail=True, methods=['put'])
     def toggle_like_post(self, request, pk=None):
