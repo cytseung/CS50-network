@@ -7,12 +7,13 @@ from django.urls import reverse
 from rest_framework import permissions, viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import ParseError, ValidationError
+from rest_framework.exceptions import ParseError, ValidationError, NotFound
 
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Post, Comment
-from .serializers import CommentSerializer, PostSerializer, UserSerializer
+from .serializers import PostSerializer, CommentSerializer, UserSerializer
+from .forms import PostFilter, CommentFilter
 from .permissions import IsOwnerOrReadOnly
 
 User = get_user_model()
@@ -20,7 +21,8 @@ User = get_user_model()
 class DefaultsMixin(object):
     """Default settings for permissions and filtering """
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
+        # permissions.IsAuthenticatedOrReadOnly,
+        permissions.IsAuthenticated,
     )
     filter_backends = (
         DjangoFilterBackend,
@@ -29,15 +31,18 @@ class DefaultsMixin(object):
 
 class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating posts."""
-    queryset = Post.objects.order_by('-createdOn')
+    queryset = Post.objects.filter(deleted=None).order_by('-createdOn')
     serializer_class = PostSerializer
+    filter_class = PostFilter
     # searchfields = ('user', )
 
-    permission_classes = [IsOwnerOrReadOnly]
+    # permission_classes = [IsOwnerOrReadOnly]
 
     @action(detail=True, methods=['put'])
     def toggle_like_post(self, request, pk=None):
         post = self.get_object()
+        if post.deleted != None:
+            raise NotFound()
         if request.data['like']:
             if request.data['like'] == "True":
                 if request.user not in post.likedUsers.all():
@@ -59,8 +64,8 @@ class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def following(self, request):
-        following_users = request.user.following.all()
-        posts = Post.objects.filter(user__in=following_users)
+        following_users = request.user.following.filter(deleted=None)
+        posts = Post.objects.filter(user__in=following_users).filter(deleted=None)
         serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data)
         
@@ -70,15 +75,40 @@ class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
 class CommentViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating commments."""
-    queryset = Comment.objects.order_by('createdOn')
+    queryset = Comment.objects.filter(deleted=None).order_by('createdOn')
     serializer_class = CommentSerializer
+    filter_class = CommentFilter
     # searchfields = ('post', )
 
 
 
 class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(deleted=None)
     serializer_class = UserSerializer
+
+
+    @action(detail=True, methods=['put'])
+    def toggle_follow_user(self, request, pk=None):
+        user = self.get_object()
+        if user.deleted != None:
+            return NotFound()
+        if request.data['follow']:
+            if request.data['follow'] == "True":
+                if user not in request.user.following.all():
+                    request.user.following.add(user)
+                    return Response({"status":"following user {username}".format(username=user.username)})
+                else:
+                    raise ValidationError({'follow': 'Cannot follow a user twice.'})
+            elif request.data['follow'] == "False":
+                if user not in request.user.following.all():
+                    request.user.following.remove(user)
+                    return Response({"status":"unfollowed user {username}".format(username=user.username)})
+                else:
+                    raise ValidationError({'follow': 'You are not following user {username}'.format(username=user.username)})
+            else:
+                raise ParseError({'follow':'follow can only be either True or False.'})
+        else:
+            raise ParseError()
 
 def index(request):
     return render(request, "network/index.html")
