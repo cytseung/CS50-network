@@ -25,7 +25,7 @@ class Post(models.Model):
     likedUsers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="likedposts")
     deleted=models.DateTimeField(null=True, blank=True)
     def __str__(self):
-        return f"post {self.id} -  by {self.user} '{self.text}'"
+        return f"post {self.text} -  by {self.user.username} '{self.text}'"
 
 class Comment(models.Model):
     text = models.CharField(max_length=150)

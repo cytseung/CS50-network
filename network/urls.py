@@ -14,3 +14,4 @@ urlpatterns = [
 router = DefaultRouter()
 router.register('post', views.PostViewSet)
 router.register('comment', views.CommentViewSet)
+router.register('user', views.UserViewSet)
