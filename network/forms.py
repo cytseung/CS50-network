@@ -11,4 +11,4 @@ class PostFilter(django_filters.FilterSet):
 class CommentFilter(django_filters.FilterSet):
     class Meta:
         model = Comment
-        fields = ('post', )
+        fields = ('post',  )
