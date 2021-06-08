@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from rest_framework import permissions, viewsets, filters
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import ParseError, ValidationError, NotFound
 
@@ -14,7 +14,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer, UserSerializer
 from .forms import PostFilter, CommentFilter
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsAdminUser
 
 User = get_user_model()
 
@@ -36,33 +36,36 @@ class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
     filter_class = PostFilter
     # searchfields = ('user', )
 
-    # permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly|IsAdminUser]
 
-    @action(detail=True, methods=['put'])
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=['put'], permission_classes=[permissions.IsAuthenticated])
     def toggle_like_post(self, request, pk=None):
         post = self.get_object()
         if post.deleted != None:
             raise NotFound()
         if request.data['like']:
             if request.data['like'] == "True":
-                if request.user not in post.likedUsers.all():
+                if request.user not in post.likedUsers.filter(deleted=None):
                     post.likedUsers.add(request.user)
                     return Response({"status":"liked post"})
                 else:
-                    raise ValidationError({'like': 'Cannot like a user twice.'})
+                    raise ValidationError({'like': 'Cannot like a post twice.'})
             elif request.data['like'] == "False":
-                if request.user in post.likedUsers.all():
+                if request.user in post.likedUsers.filter(deleted=None):
                     post.likedUsers.remove(request.user)
                     return Response({"status":"unliked post"})
                 else:
-                    raise ValidationError({'like': 'Cannot unlike a user twice.'})
+                    raise ValidationError({'like': 'Cannot unlike a post twice.'})
             else:
                 raise ParseError({'like':'like can only be either True or False.'})
         else:
             raise ParseError()
             
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def following(self, request):
         following_users = request.user.following.filter(deleted=None)
         posts = Post.objects.filter(user__in=following_users).filter(deleted=None)
@@ -80,21 +83,26 @@ class CommentViewSet(DefaultsMixin, viewsets.ModelViewSet):
     filter_class = CommentFilter
     # searchfields = ('post', )
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
-class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
+
+class UserViewSet(DefaultsMixin, viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.filter(deleted=None)
     serializer_class = UserSerializer
 
 
-    @action(detail=True, methods=['put'])
+    @action(detail=True, methods=['put'], permission_classes=[permissions.IsAuthenticated])
     def toggle_follow_user(self, request, pk=None):
         user = self.get_object()
         if user.deleted != None:
-            return NotFound()
+            raise NotFound()
         if request.data['follow']:
             if request.data['follow'] == "True":
-                if user not in request.user.following.all():
+                if user == request.user:
+                    raise ValidationError({'follow': 'You cannot follow yourself.'})
+                elif user not in request.user.following.all():
                     request.user.following.add(user)
                     return Response({"status":"following user {username}".format(username=user.username)})
                 else:
