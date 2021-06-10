@@ -112,9 +112,9 @@ class UserViewSet(DefaultsMixin, viewsets.ReadOnlyModelViewSet):
                     request.user.following.add(user)
                     return Response({"status":"following user {username}".format(username=user.username)})
                 else:
-                    raise ValidationError({'follow': 'Cannot follow a user twice.'})
+                    raise ValidationError({'follow': 'Cannot follow a user more than once.'})
             elif request.data['follow'] == "False":
-                if user not in request.user.following.all():
+                if user in request.user.following.all():
                     request.user.following.remove(user)
                     return Response({"status":"unfollowed user {username}".format(username=user.username)})
                 else:
