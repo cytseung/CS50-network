@@ -27,7 +27,8 @@ class DefaultsMixin(object):
     filter_backends = (
         DjangoFilterBackend,
         # filters.SearchFilter,
-    )        
+    )
+
 
 class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating posts."""
@@ -68,13 +69,18 @@ class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def following(self, request):
         following_users = request.user.following.filter(deleted=None)
-        posts = Post.objects.filter(user__in=following_users).filter(deleted=None)
-        serializer = self.get_serializer(posts, many=True)
+        posts = Post.objects.filter(user__in=following_users).filter(deleted=None).order_by('-createdOn')
+        
+        page = self.paginate_queryset(posts)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(page, many=True)
         return Response(serializer.data)
-        
 
         
-
 
 class CommentViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating commments."""
