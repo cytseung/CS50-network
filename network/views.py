@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -14,15 +16,15 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer, UserSerializer
 from .forms import PostFilter, CommentFilter
-from .permissions import IsOwnerOrReadOnly, IsAdminUser
+from .permissions import IsOwnerOrReadOnly, NotEditable, IsAdminUser, DisableOtherMethods
 
 User = get_user_model()
 
 class DefaultsMixin(object):
     """Default settings for permissions and filtering """
     permission_classes = (
-        # permissions.IsAuthenticatedOrReadOnly,
-        permissions.IsAuthenticated,
+        permissions.IsAuthenticatedOrReadOnly,
+        # permissions.IsAuthenticated,
     )
     filter_backends = (
         DjangoFilterBackend,
@@ -37,7 +39,7 @@ class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
     filter_class = PostFilter
     # searchfields = ('user', )
 
-    permission_classes = [IsOwnerOrReadOnly|IsAdminUser]
+    permission_classes = [(DisableOtherMethods & IsOwnerOrReadOnly)|IsAdminUser]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -64,7 +66,27 @@ class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
                 raise ParseError({'like':'like can only be either True or False.'})
         else:
             raise ParseError()
-            
+
+    @action(detail=True, methods=['put'], permission_classes=[IsOwnerOrReadOnly|IsAdminUser])
+    def delete(self, request, pk=None):
+        post = self.get_object()
+        print(post.deleted)
+        if post.deleted != None:
+            raise NotFound()
+        if request.data['delete']:
+            if request.data['delete'] == "True":
+                serializer = PostSerializer(post, data={"deleted":datetime.datetime.now()}, partial=True)
+                serializer.is_valid()
+                print(serializer.validated_data.items())
+                serializer.save()
+                return Response({"status":"deleted post"})
+            else:
+                raise ParseError({'delete':'delete can only be True.'})
+        else:
+            raise ParseError()
+
+        
+
 
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def following(self, request):
@@ -80,7 +102,7 @@ class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
         serializer = self.get_serializer(page, many=True)
         return Response(serializer.data)
 
-        
+            
 
 class CommentViewSet(DefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for listing and creating commments."""
@@ -89,15 +111,21 @@ class CommentViewSet(DefaultsMixin, viewsets.ModelViewSet):
     filter_class = CommentFilter
     # searchfields = ('post', )
 
+    permission_classes=[(DisableOtherMethods&NotEditable)|IsAdminUser]
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        post = self.get_object().post
+        serializer.save(post=post)
 
 
 
 class UserViewSet(DefaultsMixin, viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.filter(deleted=None)
     serializer_class = UserSerializer
-
+    permission_classes=[(DisableOtherMethods&NotEditable)|IsAdminUser]
 
     @action(detail=True, methods=['put'], permission_classes=[permissions.IsAuthenticated])
     def toggle_follow_user(self, request, pk=None):

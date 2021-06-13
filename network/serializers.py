@@ -8,8 +8,9 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ('id', 'text', 'createdOn', 'updated', 'user', 'username', 'comments', 'likedUsers', 'url', )
+        fields = ('id', 'text', 'createdOn', 'updated', 'user', 'username', 'comments', 'likedUsers', 'url', 'deleted', )
         read_only_fields = ['comments', 'likedUsers', 'user']
+        extra_kwargs={'deleted':{'write_only':True}}
     def get_username(self, obj):
         return obj.user.username
 
