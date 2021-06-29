@@ -5,19 +5,9 @@ import './App.css';
 
 import Postlist from './components/Postlist';
 import NewPost from './components/NewPost'
+import Paginator from './components/Paginator';
 
 const API_ROOT = "http://127.0.0.1:8000/api/"
-
-// async function getData() {
-//   await axios
-//     .get(API_ROOT + "post/")
-//     .then(res => {
-//       console.log(res.data)
-//       return res.data
-//     })
-//     .catch((e) => console.log(e));
-
-// }
 
 // const mockdata = {
 //   count: 20,
@@ -89,7 +79,7 @@ const postsReducer = (state, action) => {
         isError: false,
         data: action.payload.posts,
         nextPage: action.payload.nextPage,
-        previousPage:action.payload.previousPage,
+        previousPage: action.payload.previousPage,
       };
     case 'POSTS_FETCH_FAILURE':
       return {
@@ -103,49 +93,34 @@ const postsReducer = (state, action) => {
 }
 
 const App = () => {
-  // const data = axios.get(API_ROOT).catch(e=>{console.log(e)}).then(res=>console.log(res.data));
-
-  // const [posts, setPosts] = React.useState([]);
-  // const [isLoading, setIsLoading] = React.useState(false);
-  // const [isError, setIsError] = React.useState(false);
 
   const [posts, dispatch] = React.useReducer(
     postsReducer,
-    { data: [], isLoading: false, isError: false, nextPage: false, previousPage: false }
+    { data: [], isLoading: false, isError: false, nextPage: null, previousPage: null }
   );
 
-  // React.useEffect(() => {
-  //   setIsLoading(true);
-  //   getAsyncPosts()
-  //   .then(result => {
-  //     setPosts(result.results);
-  //     setIsLoading(false)
-  //   })
-  //   .catch(()=>setIsError(true))
-  // }, []);
-
-  React.useEffect(async () => {
-    try {
-      const data = await axios.get(API_ROOT + "post/");
+  React.useEffect(() => {
+    async function fetchData() {
       dispatch({ type: 'POSTS_FETCH_INIT' });
+      try {
+        const data = await axios.get(`${API_ROOT}post/`);
+        const result = data.data;
 
-      const result = data.data;
-
-      dispatch({
-        type: 'POSTS_FETCH_SUCCESS',
-        payload: {
-          posts: result.results,
-          nextPage: !!result.next,
-          previousPage: !!result.previous,
-        },
-
-      });
-
-    } catch {
-      dispatch({
-        type: 'POSTS_FETCH_FAILURE'
-      });
+        dispatch({
+          type: 'POSTS_FETCH_SUCCESS',
+          payload: {
+            posts: result.results,
+            nextPage: result.next,
+            previousPage: result.previous,
+          },
+        });
+      } catch {
+        dispatch({
+          type: 'POSTS_FETCH_FAILURE'
+        });
+      }
     }
+    fetchData();
   }, []);
 
 
@@ -154,8 +129,8 @@ const App = () => {
       <NewPost />
       {posts.isError && <p>Something went wrong...</p>}
       {posts.isLoading ? (<p>Loading...</p>) : (<Postlist postlist={posts.data} />)}
-      {posts.previousPage ? <button>Back</button>:null}
-      {posts.nextPage ? <button>Next</button>:null}
+
+      <Paginator previousPage={posts.previousPage} nextPage={posts.nextPage} />
 
     </>
   );
