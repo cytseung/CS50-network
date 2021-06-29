@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Compose = () => {
+const NewPost = () => {
     return (
         <>
         <h2>New Post</h2>
@@ -12,4 +12,4 @@ const Compose = () => {
     )
 }
 
-export default Compose
+export default NewPost

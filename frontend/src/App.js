@@ -4,7 +4,7 @@ import axios from 'axios';
 import './App.css';
 
 import Postlist from './components/Postlist';
-import Compose from './components/Compose'
+import NewPost from './components/NewPost'
 
 const API_ROOT = "http://127.0.0.1:8000/api/"
 
@@ -142,7 +142,7 @@ const App = () => {
 
   return (
     <>
-      <Compose />
+      <NewPost />
       {posts.isError && <p>Something went wrong...</p>}
       {posts.isLoading ? (<p>Loading...</p>) : (<Postlist postlist={posts.data} />)}
 
