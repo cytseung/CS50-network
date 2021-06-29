@@ -75,7 +75,7 @@ const API_ROOT = "http://127.0.0.1:8000/api/"
 //   );
 
 const postsReducer = (state, action) => {
-  switch (action.type){
+  switch (action.type) {
     case 'POSTS_FETCH_INIT':
       return {
         ...state,
@@ -122,21 +122,23 @@ const App = () => {
   //   .catch(()=>setIsError(true))
   // }, []);
 
-  React.useEffect(() => {
+  React.useEffect(async () => {
     dispatch({ type: 'POSTS_FETCH_INIT' });
-    axios.get(API_ROOT+"post/")
-      .then(result => {
-        dispatch({
-          type: 'POSTS_FETCH_SUCCESS',
-          payload: result.data.results
-        });
-      })
-      .catch(() =>
-        dispatch({
-          type: 'POSTS_FETCH_FAILURE'
-        })
-      );
+    try {
+      const result = await axios.get(API_ROOT + "post/");
+
+      dispatch({
+        type: 'POSTS_FETCH_SUCCESS',
+        payload: result.data.results
+      });
+
+    } catch {
+      dispatch({
+        type: 'POSTS_FETCH_FAILURE'
+      });
+    }
   }, []);
+
 
   return (
     <>
