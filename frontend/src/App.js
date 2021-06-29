@@ -87,7 +87,9 @@ const postsReducer = (state, action) => {
         ...state,
         isLoading: false,
         isError: false,
-        data: action.payload,
+        data: action.payload.posts,
+        nextPage: action.payload.nextPage,
+        previousPage:action.payload.previousPage,
       };
     case 'POSTS_FETCH_FAILURE':
       return {
@@ -109,7 +111,7 @@ const App = () => {
 
   const [posts, dispatch] = React.useReducer(
     postsReducer,
-    { data: [], isLoading: false, isError: false }
+    { data: [], isLoading: false, isError: false, nextPage: false, previousPage: false }
   );
 
   // React.useEffect(() => {
@@ -123,13 +125,20 @@ const App = () => {
   // }, []);
 
   React.useEffect(async () => {
-    dispatch({ type: 'POSTS_FETCH_INIT' });
     try {
-      const result = await axios.get(API_ROOT + "post/");
+      const data = await axios.get(API_ROOT + "post/");
+      dispatch({ type: 'POSTS_FETCH_INIT' });
+
+      const result = data.data;
 
       dispatch({
         type: 'POSTS_FETCH_SUCCESS',
-        payload: result.data.results
+        payload: {
+          posts: result.results,
+          nextPage: !!result.next,
+          previousPage: !!result.previous,
+        },
+
       });
 
     } catch {
@@ -145,6 +154,8 @@ const App = () => {
       <NewPost />
       {posts.isError && <p>Something went wrong...</p>}
       {posts.isLoading ? (<p>Loading...</p>) : (<Postlist postlist={posts.data} />)}
+      {posts.previousPage ? <button>Back</button>:null}
+      {posts.nextPage ? <button>Next</button>:null}
 
     </>
   );
