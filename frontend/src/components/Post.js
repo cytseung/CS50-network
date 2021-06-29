@@ -10,6 +10,7 @@ const Post = ({ createdOn, text, username }) => {
         <>
             <div>
                 <h3>{text}</h3>
+                {/* <button>Edit</button> */}
                 <div>
                     <span>{d.toLocaleDateString()}</span>&nbsp;<span>{d.toLocaleTimeString()}</span>
                 </div>
