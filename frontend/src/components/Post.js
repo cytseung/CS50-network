@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Comments from './Comments';
+import Commentlist from './Commentlist';
 
 const Post = ({ createdOn, text, username, comments }) => {
     const d = new Date(createdOn);
@@ -13,7 +13,7 @@ const Post = ({ createdOn, text, username, comments }) => {
                     <span>{d.toLocaleDateString()}</span>&nbsp;<span>{d.toLocaleTimeString()}</span>
                 </div>
                 <div>{username}</div>
-                <Comments comments={comments}/>
+                <Commentlist comments={comments} />
                 <div>
                 <input type="checkbox"/>
                 </div>
