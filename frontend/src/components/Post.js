@@ -1,10 +1,8 @@
 import React from 'react'
 
-const ConvertDate = (date) => {
+import Comments from './Comments';
 
-}
-
-const Post = ({ createdOn, text, username }) => {
+const Post = ({ createdOn, text, username, comments }) => {
     const d = new Date(createdOn);
     return (
         <>
@@ -15,7 +13,10 @@ const Post = ({ createdOn, text, username }) => {
                     <span>{d.toLocaleDateString()}</span>&nbsp;<span>{d.toLocaleTimeString()}</span>
                 </div>
                 <div>{username}</div>
+                <Comments comments={comments}/>
+                <div>
                 <input type="checkbox"/>
+                </div>
                 <hr />
             </div>
         </>

@@ -1,10 +1,12 @@
 import React from 'react'
 
-const Comments = () => {
+const Comments = ({ comments }) => {
     return (
-        <div>
-            
-        </div>
+        comments.map(comment=>{
+            return (<p>{comment}</p>);
+        })
+
+        
     )
 }
 
