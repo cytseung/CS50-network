@@ -4,23 +4,23 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class PostSerializer(serializers.HyperlinkedModelSerializer):
-    username = serializers.SerializerMethodField()
-    class Meta:
-        model = Post
-        fields = ('id', 'text', 'createdOn', 'updated', 'user', 'username', 'comments', 'likedUsers', 'url', 'deleted', )
-        read_only_fields = ['comments', 'likedUsers', 'user']
-        extra_kwargs={'deleted':{'write_only':True}}
-    def get_username(self, obj):
-        return obj.user.username
-
-
 class CommentSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.SerializerMethodField()
     class Meta:
         model = Comment
         fields = ('id', 'text', 'createdOn', 'updated', 'user', 'username', 'post', )
         read_only_fields = ['user']
+    def get_username(self, obj):
+        return obj.user.username
+
+class PostSerializer(serializers.HyperlinkedModelSerializer):
+    username = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True, read_only=True)
+    class Meta:
+        model = Post
+        fields = ('id', 'text', 'createdOn', 'updated', 'user', 'username', 'comments', 'likedUsers', 'url', 'deleted', )
+        read_only_fields = ['comments', 'likedUsers', 'user']
+        extra_kwargs={'deleted':{'write_only':True}}
     def get_username(self, obj):
         return obj.user.username
 

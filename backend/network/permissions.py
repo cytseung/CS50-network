@@ -22,6 +22,8 @@ class NotEditable(permissions.BasePermission):
         return False
     
     def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
         return False
 
 class DisableOtherMethods(permissions.BasePermission):
