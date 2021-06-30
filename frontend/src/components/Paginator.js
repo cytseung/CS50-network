@@ -1,18 +1,11 @@
 import React from 'react'
 
-const handleBack = () => {
-    return null
-}
-const handleNext = () => {
-    return null
-}
 
-
-const Paginator = ({ previousPage, nextPage }) => {
+const Paginator = ({ previousPage, nextPage, currentPage, setCurrentPage }) => {
     return (
         <div>
-            {previousPage ? <button onClick={handleBack}>Back</button> : null}
-            {nextPage ? <button onClick={handleNext}>Next</button> : null}
+            {previousPage ? <button onClick={()=>setCurrentPage(currentPage-1)}>Back</button> : null}
+            {nextPage ? <button onClick={()=>{setCurrentPage(currentPage+1)}}>Next</button> : null}
         </div>
     )
 }

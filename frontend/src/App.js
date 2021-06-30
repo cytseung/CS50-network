@@ -96,14 +96,15 @@ const App = () => {
 
   const [posts, dispatch] = React.useReducer(
     postsReducer,
-    { data: [], isLoading: false, isError: false, nextPage: null, previousPage: null }
+    { data: [], isLoading: false, isError: false, nextPage: null, previousPage: null, }
   );
-
+  const [currentPage, setCurrentPage] = React.useState(1)
+  
   React.useEffect(() => {
     async function fetchData() {
       dispatch({ type: 'POSTS_FETCH_INIT' });
       try {
-        const data = await axios.get(`${API_ROOT}post/`);
+        const data = await axios.get(`${API_ROOT}post/?page=${currentPage}`);
         const result = data.data;
 
         dispatch({
@@ -121,7 +122,7 @@ const App = () => {
       }
     }
     fetchData();
-  }, []);
+  }, [currentPage]);
 
 
   return (
@@ -130,7 +131,12 @@ const App = () => {
       {posts.isError && <p>Something went wrong...</p>}
       {posts.isLoading ? (<p>Loading...</p>) : (<Postlist postlist={posts.data} />)}
 
-      <Paginator previousPage={posts.previousPage} nextPage={posts.nextPage} />
+      <Paginator 
+      previousPage={posts.previousPage} 
+      nextPage={posts.nextPage} 
+      currentPage={currentPage} 
+      setCurrentPage={setCurrentPage} 
+      />
 
     </>
   );

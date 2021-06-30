@@ -15,6 +15,7 @@ const Post = ({ createdOn, text, username }) => {
                     <span>{d.toLocaleDateString()}</span>&nbsp;<span>{d.toLocaleTimeString()}</span>
                 </div>
                 <div>{username}</div>
+                <input type="checkbox"/>
                 <hr />
             </div>
         </>
