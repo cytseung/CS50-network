@@ -27,4 +27,18 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'following', 'followers', 'url', )
+        fields = ('id', 'username', 'email', 'password', 'following', 'followers', 'url', )
+        extra_kwargs={'password':{'write_only':True}}
+    
+    def create(self, validated_data):
+        user = User(
+            email=validated_data['email'],
+            username = validated_data['username']
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+class PasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(required=True)
+    

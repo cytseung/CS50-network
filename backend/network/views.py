@@ -6,17 +6,19 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
+from rest_framework import generics
 from rest_framework import permissions, viewsets, filters
 from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import ParseError, ValidationError, NotFound
+from rest_framework import status
 
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer, UserSerializer
+from .serializers import PostSerializer, CommentSerializer, UserSerializer, PasswordSerializer
 from .forms import PostFilter, CommentFilter
-from .permissions import IsOwnerOrReadOnly, NotEditable, IsAdminUser, DisableOtherMethods
+from .permissions import IsOwnerOrReadOnly, NotEditable, IsAdminUser, DisableOtherMethods, IsUserOrReadOnly
 
 User = get_user_model()
 
@@ -122,10 +124,20 @@ class CommentViewSet(DefaultsMixin, viewsets.ModelViewSet):
 
 
 
-class UserViewSet(DefaultsMixin, viewsets.ReadOnlyModelViewSet):
+class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = User.objects.filter(deleted=None)
     serializer_class = UserSerializer
-    permission_classes=[(DisableOtherMethods&NotEditable)|IsAdminUser]
+    # permission_classes=[(DisableOtherMethods&NotEditable)|IsAdminUser]
+    permission_classes=[permissions.AllowAny]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [permissions.AllowAny]
+        elif self.action == 'destroy':
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes  = [IsAdminUser|IsUserOrReadOnly]
+        return [permission() for permission in permission_classes]
 
     @action(detail=True, methods=['put'], permission_classes=[permissions.IsAuthenticated])
     def toggle_follow_user(self, request, pk=None):
@@ -152,8 +164,26 @@ class UserViewSet(DefaultsMixin, viewsets.ReadOnlyModelViewSet):
         else:
             raise ParseError()
 
-def index(request):
-    return render(request, "network/index.html")
+    @action(detail=True, methods=['post'], permission_classes=[permissions.AllowAny])
+    def set_password(self, request, pk=None):
+        user = self.get_object()
+        serializer = PasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({'status': 'password set'})
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+# class UserCreate(generics.CreateAPIView):
+#     queryset = User.objects.filter(deleted=None)
+#     serializer_class = UserSerializer
+
+
+# def index(request):
+#     return render(request, "network/index.html")
 
 
 def login_view(request):
@@ -181,28 +211,28 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
-def register(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
+# def register(request):
+#     if request.method == "POST":
+#         username = request.POST["username"]
+#         email = request.POST["email"]
 
-        # Ensure password matches confirmation
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
-        if password != confirmation:
-            return render(request, "network/register.html", {
-                "message": "Passwords must match."
-            })
+#         # Ensure password matches confirmation
+#         password = request.POST["password"]
+#         confirmation = request.POST["confirmation"]
+#         if password != confirmation:
+#             return render(request, "network/register.html", {
+#                 "message": "Passwords must match."
+#             })
 
-        # Attempt to create new user
-        try:
-            user = User.objects.create_user(username, email, password)
-            user.save()
-        except IntegrityError:
-            return render(request, "network/register.html", {
-                "message": "Username already taken."
-            })
-        login(request, user)
-        return HttpResponseRedirect(reverse("index"))
-    else:
-        return render(request, "network/register.html")
+#         # Attempt to create new user
+#         try:
+#             user = User.objects.create_user(username, email, password)
+#             user.save()
+#         except IntegrityError:
+#             return render(request, "network/register.html", {
+#                 "message": "Username already taken."
+#             })
+#         login(request, user)
+#         return HttpResponseRedirect(reverse("index"))
+#     else:
+#         return render(request, "network/register.html")
