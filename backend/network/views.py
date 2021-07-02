@@ -14,6 +14,7 @@ from rest_framework.exceptions import ParseError, ValidationError, NotFound
 from rest_framework import status
 
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.views import APIView
 
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer, UserSerializer, PasswordSerializer
@@ -185,30 +186,45 @@ class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
 # def index(request):
 #     return render(request, "network/index.html")
 
+# class LoginView(APIView):
+#     permissions_classes = []
+#     def post(self, request,):
+#         username = request.data.get("username")
+#         password = request.data.get("password")
+#         user = authenticate(username=username, password=password)
+#         if user:
+#             return Response({"token": user.auth_token.key})
+#         else:
+#             return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
-def login_view(request):
-    if request.method == "POST":
+# def login_view(request):
+#     if request.method == "POST":
 
-        # Attempt to sign user in
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
+#         # Attempt to sign user in
+#         username = request.POST["username"]
+#         password = request.POST["password"]
+#         user = authenticate(request, username=username, password=password)
 
-        # Check if authentication successful
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect(reverse("index"))
-        else:
-            return render(request, "network/login.html", {
-                "message": "Invalid username and/or password."
-            })
-    else:
-        return render(request, "network/login.html")
+#         # Check if authentication successful
+#         if user is not None:
+#             login(request, user)
+#             return HttpResponseRedirect(reverse("index"))
+#         else:
+#             return render(request, "network/login.html", {
+#                 "message": "Invalid username and/or password."
+#             })
+#     else:
+#         return render(request, "network/login.html")
 
+class LogoutView(APIView):
+    permissions_classes = [permissions.IsAuthenticated]
+    def post(self,request,):
+        request.user.auth_token.delete()
+        return Response("User is logged out", status=status.HTTP_200_OK)
 
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect(reverse("index"))
+# def logout_view(request):
+#     logout(request)
+#     return HttpResponseRedirect(reverse("index"))
 
 
 # def register(request):

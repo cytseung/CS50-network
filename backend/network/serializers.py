@@ -1,6 +1,10 @@
-from rest_framework import serializers
-from .models import Post, Comment
 from django.contrib.auth import get_user_model
+
+from rest_framework import serializers
+from rest_framework.authtoken.models import Token
+
+from .models import Post, Comment
+
 
 User = get_user_model()
 
@@ -37,8 +41,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         )
         user.set_password(validated_data['password'])
         user.save()
+        Token.objects.create(user=user)
         return user
 
 class PasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True)
-    
