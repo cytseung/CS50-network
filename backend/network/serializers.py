@@ -44,5 +44,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         Token.objects.create(user=user)
         return user
 
+class UserSerializerForUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', )
+
 class PasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True)

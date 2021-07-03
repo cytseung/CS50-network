@@ -17,7 +17,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 
 from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer, UserSerializer, PasswordSerializer
+from .serializers import PostSerializer, CommentSerializer, UserSerializer, PasswordSerializer, UserSerializerForUpdate
 from .forms import PostFilter, CommentFilter
 from .permissions import IsOwnerOrReadOnly, NotEditable, IsAdminUser, DisableOtherMethods, IsUserOrReadOnly
 
@@ -139,6 +139,14 @@ class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
         else:
             permission_classes  = [IsAdminUser|IsUserOrReadOnly]
         return [permission() for permission in permission_classes]
+    
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+
+        if self.request.method == 'PUT':
+            serializer_class = UserSerializerForUpdate
+
+        return serializer_class
 
     @action(detail=True, methods=['put'], permission_classes=[permissions.IsAuthenticated])
     def toggle_follow_user(self, request, pk=None):
