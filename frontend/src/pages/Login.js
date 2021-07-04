@@ -1,5 +1,6 @@
 import React from 'react'
 import Navbar from '../components/Navbar';
+import { Link } from 'react-router-dom';
 const Login = () => {
     return (
         <div>
@@ -16,7 +17,7 @@ const Login = () => {
                     <input class="btn btn-primary" type="submit" value="Login" />
                 </div>
             </form>
-            Don't have an account? <a href="">Register here.</a>
+            Don't have an account? <Link to="register">Register here.</Link>
         </div>
     )
 }

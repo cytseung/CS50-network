@@ -1,5 +1,6 @@
 import React from 'react'
 import Navbar from '../components/Navbar';
+import { Link } from 'react-router-dom';
 const Register = () => {
     return (
         <div>
@@ -21,7 +22,7 @@ const Register = () => {
                 <input type="submit" value="Register" />
             </form>
 
-            Already have an account? <a href="">Log In here.</a>
+            Already have an account? <Link to="login">Log In here.</Link>
         </div>
     )
 }
