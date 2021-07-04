@@ -4,6 +4,7 @@ import axios from 'axios';
 import Postlist from '../components/Postlist';
 import NewPost from '../components/NewPost'
 import Paginator from '../components/Paginator';
+import Navbar from '../components/Navbar';
 
 const API_ROOT = "http://127.0.0.1:8000/api/"
 
@@ -125,6 +126,7 @@ const Home = () => {
 
   return (
     <>
+      <Navbar />
       <NewPost />
       {posts.isError && <p>Something went wrong...</p>}
       {posts.isLoading ? (<p>Loading...</p>) : (<Postlist postlist={posts.data} />)}
