@@ -12,6 +12,8 @@ from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import ParseError, ValidationError, NotFound
 from rest_framework import status
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
@@ -229,6 +231,21 @@ class LogoutView(APIView):
     def post(self,request,):
         request.user.auth_token.delete()
         return Response("User is logged out", status=status.HTTP_200_OK)
+
+class CustomAuthToken(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'user_name': user.username,
+            'email': user.email
+        })
 
 # def logout_view(request):
 #     logout(request)

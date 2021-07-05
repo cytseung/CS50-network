@@ -16,7 +16,7 @@ urlpatterns = [
     # path("logout", views.logout_view, name="logout"),
     # path("register", views.register, name="register"),
     path('', include(router.urls)),
-    path("token/", obtain_auth_token, name='api-token'),
+    path("token/", views.CustomAuthToken.as_view(), name='api-token'),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     # path("login/", views.LoginView.as_view(), name="login"),
     # path("users/", views.UserCreate.as_view(), name="user_create"),
