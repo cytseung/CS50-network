@@ -6,7 +6,7 @@ import NewPost from '../components/NewPost'
 import Paginator from '../components/Paginator';
 import Navbar from '../components/Navbar';
 
-import { initialState as postsInitialState, postsReducer } from '../fetchposts/reducers';
+import { initialState as postsInitialState, postsReducer } from '../fetchposts/reducer';
 import { fetchData } from '../fetchposts/actions';
 
 

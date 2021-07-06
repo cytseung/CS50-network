@@ -20,7 +20,7 @@ const Login = (props) => {
             if (!response.user_id) return
             props.history.push('/')
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
     return (
@@ -53,6 +53,7 @@ const Login = (props) => {
                         type="submit"
                         value="Login"
                         onClick={handleLogin}
+                        disabled={loading}
                     />
                 </div>
             </form>

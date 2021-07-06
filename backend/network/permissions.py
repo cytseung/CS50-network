@@ -30,7 +30,7 @@ class DisableOtherMethods(permissions.BasePermission):
     AllowedMethods = ["GET", "PUT", "POST", "HEAD"]
     def has_permission(self, request, view):
         if request.method not in self.AllowedMethods:
-            print(request.method + "not allowed")
+            print(request.method + " not allowed")
             return False
         return True
     

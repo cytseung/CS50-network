@@ -227,10 +227,17 @@ class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
 #         return render(request, "network/login.html")
 
 class LogoutView(APIView):
-    permissions_classes = [permissions.IsAuthenticated]
+    # permissions_classes = [permissions.IsAuthenticated]
     def post(self,request,):
-        request.user.auth_token.delete()
-        return Response("User is logged out", status=status.HTTP_200_OK)
+        try:
+            request.user.auth_token.delete()
+            return Response("User is logged out", status=status.HTTP_200_OK)
+        except AttributeError:
+            print("User is not logged in")
+            return Response("User is not logged in", status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response("An error occurred", status=status.HTTP_400_BAD_REQUEST )
+            
 
 class CustomAuthToken(ObtainAuthToken):
 
