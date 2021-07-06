@@ -7,7 +7,7 @@ import {
   Switch,
 } from 'react-router-dom';
 import routes from './config/routes.js';
-
+import { AuthProvider } from './auth/context.js';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -16,18 +16,20 @@ import './App.css';
 
 const App = () => {
   return (
-    <Router>
-      <Switch>
-        {routes.map((route) => (
-          <Route
-            exact
-            key={route.path}
-            path={route.path}
-            component={route.component}
-          />
-        ))}
-      </Switch>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Switch>
+          {routes.map((route) => (
+            <Route
+              exact
+              key={route.path}
+              path={route.path}
+              component={route.component}
+            />
+          ))}
+        </Switch>
+      </Router>
+    </AuthProvider>
   )
 }
 

@@ -5,7 +5,7 @@ const Register = () => {
     return (
         <div>
             <Navbar />
-
+            <h2>Register</h2>
             <form action="" method="post">
                 <div >
                     <input autoFocus type="text" name="username" placeholder="Username" />
