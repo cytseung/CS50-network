@@ -188,6 +188,7 @@ class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+
 # class UserCreate(generics.CreateAPIView):
 #     queryset = User.objects.filter(deleted=None)
 #     serializer_class = UserSerializer

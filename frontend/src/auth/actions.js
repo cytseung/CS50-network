@@ -41,7 +41,7 @@ export async function logout(dispatch) {
         await axios.post(`${API_ROOT}logout/`);
         // console.log("hello2")
     } catch (error) {
-        console.log(error);
+        console.log(error.response.data);
     } finally {
         localStorage.removeItem('currentUser');
         localStorage.removeItem('token');

@@ -8,9 +8,7 @@ import {
 } from 'react-router-dom';
 import routes from './config/routes.js';
 import { AuthProvider } from './auth/context.js';
-// import Home from './pages/Home';
-// import Login from './pages/Login';
-// import Register from './pages/Register';
+
 
 import './App.css';
 
