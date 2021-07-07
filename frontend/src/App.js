@@ -12,7 +12,7 @@ import { AuthProvider } from './auth/context.js';
 
 import './App.css';
 
-
+import AppRoute from './components/AppRoute'
 
 const App = () => {
 
@@ -21,11 +21,12 @@ const App = () => {
       <Router>
         <Switch>
           {routes.map((route) => (
-            <Route
+            <AppRoute
               exact
               key={route.path}
               path={route.path}
               component={route.component}
+              isPrivate={route.isPrivate}
             />
           ))}
         </Switch>

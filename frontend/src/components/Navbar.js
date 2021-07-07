@@ -42,6 +42,9 @@ const Navbar = (props) => {
                             <Link to="">All Posts</Link>
                         </li>
                         <li>
+                            <Link to="following">Following</Link>
+                        </li>
+                        <li>
                             <Link to="login">Log In</Link>
                         </li>
                         <li>

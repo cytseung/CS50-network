@@ -3,24 +3,34 @@ import Login from "../pages/Login"
 import Register from "../pages/Register"
 import Home from "../pages/Home"
 import NotFound from "../pages/NotFound"
-
+import Following from "../pages/Following"
 
 const routes = [
     {
         path:'/',
-        component: Home
+        component: Home,
+        isPrivate: false,
+    },
+    {
+        path:'/following',
+        component: Following,
+        isPrivate: true,
+
     },
     {
         path:'/login',
-        component: Login
+        component: Login,
+        isPrivate: false,
     },
     {
         path:'/register',
-        component: Register
+        component: Register,
+        isPrivate: false,
     },
     {
         path:'/*',
-        component:NotFound
+        component:NotFound,
+        isPrivate: true,
     },
 ]
 
