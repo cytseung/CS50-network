@@ -109,24 +109,22 @@ const Home = () => {
 
 
   const [text, setText] = React.useState("");
-  console.log(text)
+  // console.log(text)
   const [textForSubmit, setTextForSubmit] = React.useState(text)
   
-  console.log(textForSubmit)
+  // console.log(textForSubmit)
 
   const onInput = (e) => setText(e.target.value);
 
   const handlePostText = (e) =>{
     e.preventDefault();
     setTextForSubmit(text);
-    console.log(789)
   }
 
   const handlePost = React.useCallback(async () => {
     const payload = { text: textForSubmit };
-    console.log(456)
+
     try {
-      console.log("123")
       const response = await axios.post(`${API_ROOT}post/`, payload);
       if (response === undefined) throw new Error();
       console.log(response)
