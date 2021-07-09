@@ -41,18 +41,25 @@ const Navbar = (props) => {
                         <li>
                             <Link to="">All Posts</Link>
                         </li>
-                        <li>
-                            <Link to="following">Following</Link>
-                        </li>
-                        <li>
-                            <Link to="login">Log In</Link>
-                        </li>
-                        <li>
-                            <button onClick={handleLogout}>Log Out</button>
-                        </li>
-                        <li >
-                            <Link to="register">Register</Link>
-                        </li>
+                        {userDetails.user ? (
+                            <>
+                                <li>
+                                    <Link to="following">Following</Link>
+                                </li>
+                                <li>
+                                    <button onClick={handleLogout}>Log Out</button>
+                                </li>
+                            </>
+                        ) : (
+                            <>
+                                <li>
+                                    <Link to="login">Log In</Link>
+                                </li>
+                                <li >
+                                    <Link to="register">Register</Link>
+                                </li>
+                            </>
+                        )}
                     </ul>
                 </div>
             </nav>

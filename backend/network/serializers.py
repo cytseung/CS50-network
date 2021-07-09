@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+from rest_framework.relations import PrimaryKeyRelatedField
 
 from .models import Post, Comment
 
@@ -15,20 +16,6 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
         model = Comment
         fields = ('id', 'text', 'createdOn', 'updated', 'user', 'user_id', 'username', 'post', )
         read_only_fields = ['user']
-    def get_username(self, obj):
-        return obj.user.username
-    def get_user_id(self,obj):
-        return obj.user.id
-
-class PostSerializer(serializers.HyperlinkedModelSerializer):
-    username = serializers.SerializerMethodField()
-    user_id = serializers.SerializerMethodField()
-    comments = CommentSerializer(many=True, read_only=True)
-    class Meta:
-        model = Post
-        fields = ('id', 'text', 'createdOn', 'updated', 'user', 'user_id', 'username', 'comments', 'likedUsers', 'url', 'deleted', )
-        read_only_fields = ['comments', 'likedUsers', 'user']
-        extra_kwargs={'deleted':{'write_only':True}}
     def get_username(self, obj):
         return obj.user.username
     def get_user_id(self,obj):
@@ -57,3 +44,19 @@ class UserSerializerForUpdate(serializers.ModelSerializer):
 
 class PasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True)
+
+class PostSerializer(serializers.HyperlinkedModelSerializer):
+    username = serializers.SerializerMethodField()
+    user_id = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True, read_only=True)
+    likedUsers = PrimaryKeyRelatedField(many=True, read_only=True)
+    likedUsersinfo = UserSerializer(many=True, read_only=True)
+    class Meta:
+        model = Post
+        fields = ('id', 'text', 'createdOn', 'updated', 'user', 'user_id', 'username', 'comments', 'likedUsers','likedUsersinfo', 'url', 'deleted', )
+        read_only_fields = ['comments', 'likedUsers', 'user']
+        extra_kwargs={'deleted':{'write_only':True}}
+    def get_username(self, obj):
+        return obj.user.username
+    def get_user_id(self,obj):
+        return obj.user.id
