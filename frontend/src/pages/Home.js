@@ -1,5 +1,7 @@
 import React from 'react';
+import axios from 'axios';
 
+import { API_ROOT } from '../config/global';
 
 import Postlist from '../components/Postlist';
 import NewPost from '../components/NewPost'
@@ -9,6 +11,7 @@ import Navbar from '../components/Navbar';
 import { initialState as postsInitialState, postsReducer } from '../fetchposts/reducer';
 import { fetchData } from '../fetchposts/actions';
 
+import { useAuthState } from '../auth/context';
 
 // const mockdata = {
 //   count: 20,
@@ -95,11 +98,44 @@ import { fetchData } from '../fetchposts/actions';
 
 const Home = () => {
 
+  const userDetails = useAuthState();
+
   const [posts, dispatch] = React.useReducer(
     postsReducer,
     postsInitialState
   );
   const [currentPage, setCurrentPage] = React.useState(1)
+  
+
+
+  const [text, setText] = React.useState("");
+  console.log(text)
+  const [textForSubmit, setTextForSubmit] = React.useState(text)
+  
+  console.log(textForSubmit)
+
+  const onInput = (e) => setText(e.target.value);
+
+  const handlePostText = (e) =>{
+    e.preventDefault();
+    setTextForSubmit(text);
+    console.log(789)
+  }
+
+  const handlePost = React.useCallback(async () => {
+    const payload = { text: textForSubmit };
+    console.log(456)
+    try {
+      console.log("123")
+      const response = await axios.post(`${API_ROOT}post/`, payload);
+      if (response === undefined) throw new Error();
+      console.log(response)
+      setText("")
+
+    } catch (error) {
+      console.log(error)
+    }
+  },[textForSubmit])
 
   // React.useEffect(() => {
   //   async function fetchData() {
@@ -132,11 +168,12 @@ const Home = () => {
       await fetchData(dispatch, currentPage);
     }
     fetch();
-  }, [currentPage])
+    handlePost();
+  }, [currentPage, handlePost])
   return (
     <>
       <Navbar />
-      <NewPost />
+      {userDetails.user ? <NewPost onPost={handlePostText} onInput={onInput} text={text} /> : null}
       {posts.isError && <p>Something went wrong...</p>}
       {posts.isLoading ? (<p>Loading...</p>) : (<Postlist postlist={posts.data} />)}
 

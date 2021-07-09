@@ -10,7 +10,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Favorite from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 
-import { useAuthState, useAuthDispatch } from '../auth/context';
+import { useAuthState } from '../auth/context';
 
 const Post = ({ id, post, history }) => {
     const d = new Date(post.createdOn);
