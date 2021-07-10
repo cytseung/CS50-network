@@ -80,7 +80,7 @@ const Post = ({ id, post, history }) => {
                 <div>
                     <span>{d.toLocaleDateString()}</span>&nbsp;<span>{d.toLocaleTimeString()}</span>
                 </div>
-                <div>{post.username}</div>
+                <div><Link to="/login">{post.username}</Link></div>
                 <div>
                     <FormControlLabel
                         control={

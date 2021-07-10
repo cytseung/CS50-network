@@ -3,10 +3,15 @@ import axios from 'axios';
 
 
 
-export async function fetchData(dispatch, currentPage) {
+export async function fetchData(dispatch, currentPage, following) {
     dispatch({ type: 'POSTS_FETCH_INIT' });
     try {
-        const data = await axios.get(`${API_ROOT}post/?page=${currentPage}`);
+        if (following) {
+            var path = "following/"
+        } else {
+            var path = ""
+        }
+        const data = await axios.get(`${API_ROOT}post/${path}?page=${currentPage}`);
         const result = data.data;
 
         dispatch({
