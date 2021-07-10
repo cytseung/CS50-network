@@ -77,7 +77,7 @@ const Post = ({ id, post, history }) => {
         try {
             const response = await axios.put(`${API_ROOT}post/${id}/`, payload);
             if (response === undefined) throw new Error();
-            console.log(response)
+            // console.log(response)
             return response;
         } catch (error) {
             console.log(error)
@@ -87,7 +87,6 @@ const Post = ({ id, post, history }) => {
 
 
     const handleEditSubmit = async (event) => {
-        console.log(123)
         event.preventDefault();
         if (!userDetails.user) {
             alert("You are not logged in.")

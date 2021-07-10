@@ -122,6 +122,8 @@ const Home = () => {
   }
 
   const handlePost = React.useCallback(async () => {
+    if (textForSubmit === "")
+      return;
     const payload = { text: textForSubmit };
 
     try {
