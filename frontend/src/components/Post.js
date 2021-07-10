@@ -14,6 +14,7 @@ import { useAuthState } from '../auth/context';
 
 const Post = ({ id, post, history }) => {
     const d = new Date(post.createdOn);
+    const upd = new Date(post.updated)
     const userDetails = useAuthState();
     const [isLiked, setIsLiked] = React.useState(false);
     const [likedUsersNum, setlikedUsersNum] = React.useState(post.likedUsers.length)
@@ -71,17 +72,17 @@ const Post = ({ id, post, history }) => {
         setIsEditing(!isEditing);
     }
 
-    const editPost = async () =>{
-        const payload = {text: editText}
+    const editPost = async () => {
+        const payload = { text: editText }
         try {
             const response = await axios.put(`${API_ROOT}post/${id}/`, payload);
             if (response === undefined) throw new Error();
             console.log(response)
             return response;
-          } catch (error) {
+        } catch (error) {
             console.log(error)
-          }
-          
+        }
+
     }
 
 
@@ -95,14 +96,14 @@ const Post = ({ id, post, history }) => {
 
         }
         try {
-           const response = await editPost();
-           if (response.status === 200){
+            const response = await editPost();
+            if (response.status === 200) {
                 setIsEditing(false);
-                setTitleText(editText)
-           }
-           else{
-               console.log("An error occurred")
-           }
+                setTitleText(editText);
+            }
+            else {
+                console.log("An error occurred")
+            }
 
         } catch (e) {
             console.log(e);
@@ -115,6 +116,8 @@ const Post = ({ id, post, history }) => {
 
     }, [isLiked])
 
+    const created = <><span>{d.toLocaleDateString()}</span>&nbsp;<span>{d.toLocaleTimeString()}</span></>
+    const updated = <><span>{upd.toLocaleDateString()}</span>&nbsp;<span>{upd.toLocaleTimeString()}</span></>
 
 
     return (
@@ -127,6 +130,7 @@ const Post = ({ id, post, history }) => {
                             <p><button type="submit" variant="contained" color="primary" onClick={handleEditSubmit} disabled={!editText}>Submit</button></p>
                         </form>
                         : (<h3>{titleText}</h3>)}
+                    {d.toLocaleTimeString() !== upd.toLocaleTimeString() || d.toLocaleDateString() !== upd.toLocaleDateString() ? <p>Last updated {updated}</p> : null}
                     {userDetails.user && userDetails.user.user_id === post.user_id
                         ? <button onClick={handleEdit}>Edit</button>
                         : null
@@ -134,7 +138,7 @@ const Post = ({ id, post, history }) => {
 
                 </span>
                 <div>
-                    <span>{d.toLocaleDateString()}</span>&nbsp;<span>{d.toLocaleTimeString()}</span>
+                    {created}
                 </div>
                 <div><Link to="/login">{post.username}</Link></div>
                 <div>
