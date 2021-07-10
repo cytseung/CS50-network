@@ -2,8 +2,6 @@ import React from 'react';
 // import axios from 'axios';
 import {
   BrowserRouter as Router,
-  // Redirect,
-  Route,
   Switch,
 } from 'react-router-dom';
 import routes from './config/routes.js';

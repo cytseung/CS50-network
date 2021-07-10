@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-import { Link, withRouter, Redirect } from "react-router-dom"
+import { Link, withRouter } from "react-router-dom"
 import { logout } from '../auth/actions';
 import { useAuthState, useAuthDispatch } from '../auth/context';
 

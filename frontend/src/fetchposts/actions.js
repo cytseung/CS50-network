@@ -5,12 +5,11 @@ import axios from 'axios';
 
 export async function fetchData(dispatch, currentPage, following) {
     dispatch({ type: 'POSTS_FETCH_INIT' });
+    let path = ""
     try {
         if (following) {
-            var path = "following/"
-        } else {
-            var path = ""
-        }
+            path = "following/"
+        } 
         const data = await axios.get(`${API_ROOT}post/${path}?page=${currentPage}`);
         const result = data.data;
 
