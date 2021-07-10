@@ -17,6 +17,10 @@ const Post = ({ id, post, history }) => {
     const userDetails = useAuthState();
     const [isLiked, setIsLiked] = React.useState(false);
     const [likedUsersNum, setlikedUsersNum] = React.useState(post.likedUsers.length)
+    const [isEditing, setIsEditing] = React.useState(false);
+    const [editText, setEditText] = React.useState(post.text)
+    const [titleText, setTitleText] = React.useState(post.text)
+
     const toggleLike = async (like) => {
         try {
             let v = false;
@@ -42,11 +46,11 @@ const Post = ({ id, post, history }) => {
     }, [])
 
     const handleCheckbox = async (event) => {
-        if (!userDetails.user){
+        if (!userDetails.user) {
             alert("You are not logged in.")
             history.push("/login");
             return null;
-            
+
         }
         try {
             const response = await toggleLike(event.target.checked);
@@ -63,8 +67,48 @@ const Post = ({ id, post, history }) => {
         }
     };
 
+    const handleEdit = () => {
+        setIsEditing(!isEditing);
+    }
+
+    const editPost = async () =>{
+        const payload = {text: editText}
+        try {
+            const response = await axios.put(`${API_ROOT}post/${id}/`, payload);
+            if (response === undefined) throw new Error();
+            console.log(response)
+            return response;
+          } catch (error) {
+            console.log(error)
+          }
+          
+    }
 
 
+    const handleEditSubmit = async (event) => {
+        console.log(123)
+        event.preventDefault();
+        if (!userDetails.user) {
+            alert("You are not logged in.")
+            history.push("/login");
+            return null;
+
+        }
+        try {
+           const response = await editPost();
+           if (response.status === 200){
+                setIsEditing(false);
+                setTitleText(editText)
+           }
+           else{
+               console.log("An error occurred")
+           }
+
+        } catch (e) {
+            console.log(e);
+        }
+
+    }
 
     React.useEffect(() => {
         // console.log(isLiked)
@@ -76,7 +120,19 @@ const Post = ({ id, post, history }) => {
     return (
         <>
             <div>
-                <h3>{post.text}</h3>
+                <span>
+                    {isEditing
+                        ? <form >
+                            <p><textarea id="edit" type="text" autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} /></p>
+                            <p><button type="submit" variant="contained" color="primary" onClick={handleEditSubmit} disabled={!editText}>Submit</button></p>
+                        </form>
+                        : (<h3>{titleText}</h3>)}
+                    {userDetails.user && userDetails.user.user_id === post.user_id
+                        ? <button onClick={handleEdit}>Edit</button>
+                        : null
+                    }
+
+                </span>
                 <div>
                     <span>{d.toLocaleDateString()}</span>&nbsp;<span>{d.toLocaleTimeString()}</span>
                 </div>
