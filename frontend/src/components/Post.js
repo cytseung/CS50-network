@@ -186,7 +186,7 @@ const Post = ({ id, post, history }) => {
             const response = await postComment();
             if (response.status === 201) {
                 setNewComment("");
-            return response;
+                return response;
             }
             else {
                 console.log("An error occurred")
@@ -221,6 +221,14 @@ const Post = ({ id, post, history }) => {
     const created = <><span>{d.toLocaleDateString()}</span>&nbsp;<span>{d.toLocaleTimeString()}</span></>
     const updated = <><span>{upd.toLocaleDateString()}</span>&nbsp;<span>{upd.toLocaleTimeString()}</span></>
 
+    let editButton = null;
+    if (userDetails.user && userDetails.user.user_id === post.user_id) {
+        if (isEditing) {
+            editButton = <><button onClick={handleEdit}>Cancel</button></>
+        } else {
+            editButton = <><button onClick={handleEdit}>Edit</button></>
+        }
+    }
 
     return (
         <>
@@ -233,10 +241,12 @@ const Post = ({ id, post, history }) => {
                         </form>
                         : (<h3>{titleText}</h3>)}
                     {d.toLocaleTimeString() !== upd.toLocaleTimeString() || d.toLocaleDateString() !== upd.toLocaleDateString() ? <p>Last updated {updated}</p> : null}
-                    {userDetails.user && userDetails.user.user_id === post.user_id
+                    {/* {userDetails.user && userDetails.user.user_id === post.user_id
                         ? <button onClick={handleEdit}>Edit</button>
                         : null
-                    }
+                    } */}
+                    {editButton}
+
 
                 </span>
                 <div>
