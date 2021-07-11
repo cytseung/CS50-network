@@ -164,12 +164,12 @@ const Home = () => {
 
 
 
-  React.useEffect(() => {
+  React.useEffect(async () => {
     const fetch = async () => {
       await fetchData(dispatch, currentPage);
     }
-    fetch();
-    handlePost();
+    await handlePost();
+    await fetch();
   }, [currentPage, handlePost])
   return (
     <>
