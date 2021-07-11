@@ -7,10 +7,8 @@ import Paginator from '../components/Paginator';
 import { initialState as postsInitialState, postsReducer } from '../fetchposts/reducer';
 import { fetchData } from '../fetchposts/actions';
 
-import { useAuthState } from '../auth/context';
 
 const Following = () => {
-    const userDetails = useAuthState();
 
     const [posts, dispatch] = React.useReducer(
         postsReducer,

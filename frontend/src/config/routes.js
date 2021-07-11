@@ -4,6 +4,7 @@ import Register from "../pages/Register"
 import Home from "../pages/Home"
 import NotFound from "../pages/NotFound"
 import Following from "../pages/Following"
+import User from "../pages/User"
 
 const routes = [
     {
@@ -27,6 +28,12 @@ const routes = [
         component: Register,
         isPrivate: false,
     },
+    {
+        path:'/user/:username',
+        component: User,
+        isPrivate: false,
+    },
+    
     {
         path:'/*',
         component:NotFound,

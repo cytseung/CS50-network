@@ -4,6 +4,7 @@ import Post from './Post'
 
 
 const Postlist = ({postlist}) => {
+    console.log("Post List rendered")
     return postlist.map((post) => {
         // console.log(post)
         return (
@@ -14,5 +15,6 @@ const Postlist = ({postlist}) => {
     });
 }
 
+const PostlistMemo = React.memo(Postlist)
 
-export default Postlist;
+export default PostlistMemo;

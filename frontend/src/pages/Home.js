@@ -114,7 +114,8 @@ const Home = () => {
   
   // console.log(textForSubmit)
 
-  const onInput = (e) => setText(e.target.value);
+  const onInput = (e) => setText(e.target.value)
+
 
   const handlePostText = (e) =>{
     e.preventDefault();

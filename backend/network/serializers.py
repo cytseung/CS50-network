@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.models import query
 
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
@@ -12,6 +13,7 @@ User = get_user_model()
 class CommentSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.SerializerMethodField()
     user_id = serializers.SerializerMethodField()
+    post = PrimaryKeyRelatedField(many=False, queryset = Post.objects.filter(deleted=None))
     class Meta:
         model = Comment
         fields = ('id', 'text', 'createdOn', 'updated', 'user', 'user_id', 'username', 'post', )

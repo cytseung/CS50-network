@@ -4,7 +4,7 @@ import { Link, withRouter } from "react-router-dom"
 
 import { API_ROOT } from '../config/global';
 import Commentlist from './Commentlist';
-
+import NewComment from './NewComment';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Favorite from '@material-ui/icons/Favorite';
@@ -13,14 +13,21 @@ import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import { useAuthState } from '../auth/context';
 
 const Post = ({ id, post, history }) => {
+    console.log("Post rendered")
     const d = new Date(post.createdOn);
     const upd = new Date(post.updated)
     const userDetails = useAuthState();
+
     const [isLiked, setIsLiked] = React.useState(false);
     const [likedUsersNum, setlikedUsersNum] = React.useState(post.likedUsers.length)
+
     const [isEditing, setIsEditing] = React.useState(false);
     const [editText, setEditText] = React.useState(post.text)
     const [titleText, setTitleText] = React.useState(post.text)
+
+    const [newComment, setNewComment] = React.useState("");
+    const [newCommentSubmit, setNewCommentSubmit] = React.useState(newComment);
+    const [comments, setComments] = React.useState(post.comments)
 
     const toggleLike = async (like) => {
         try {
@@ -110,10 +117,106 @@ const Post = ({ id, post, history }) => {
 
     }
 
-    React.useEffect(() => {
-        // console.log(isLiked)
+    // React.useEffect(() => {
+    //     // console.log(isLiked)
 
-    }, [isLiked])
+    // }, [isLiked])
+
+    const postComment = async () => {
+        const payload = { text: newCommentSubmit, post: id }
+        try {
+            const response = await axios.post(`${API_ROOT}comment/`, payload);
+            console.log(response.data)
+            if (response === undefined) throw new Error();
+            // console.log(response)
+            return response;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const handleCommentInput = (event) => {
+        console.log("handleCommentInput called")
+        setNewComment(event.target.value);
+    }
+
+    // const handleComment = async (event) => {
+    //     event.preventDefault();
+    //     if (newComment === "")
+    //         return;
+    //     if (!userDetails.user) {
+    //         alert("You are not logged in.")
+    //         history.push("/login");
+    //         return;
+
+    //     }
+    //     try {
+    //         const response = await postComment();
+    //         if (response.status === 201) {
+    //             setNewCommentSubmit(newComment);
+    //             setNewComment("");
+
+    //         }
+    //         else {
+    //             console.log("An error occurred")
+    //         }
+
+    //     } catch (e) {
+    //         console.log(e);
+
+    //     }
+    // }
+    const handleComment = (event) => {
+        console.log("handleComment called")
+        event.preventDefault();
+        setNewCommentSubmit(newComment);
+    }
+
+    const handleCommentSubmit = React.useCallback(async (event) => {
+        console.log("handleCommentSubmit called")
+        if (newCommentSubmit === "")
+            return;
+        if (!userDetails.user) {
+            alert("You are not logged in.")
+            history.push("/login");
+            return;
+
+        }
+        try {
+            console.log(newCommentSubmit)
+            const response = await postComment();
+            if (response.status === 201) {
+                setNewComment("");
+            return response;
+            }
+            else {
+                console.log("An error occurred")
+            }
+
+        } catch (e) {
+            console.log(e);
+
+        }
+    }, [newCommentSubmit])
+
+
+    React.useEffect(async () => {
+        console.log("useEffect called")
+        const response = await handleCommentSubmit();
+        if (newCommentSubmit === "")
+            return
+        console.log(newCommentSubmit)
+        if (userDetails.user && response) {
+            const c = {
+                text: newCommentSubmit,
+                username: userDetails.user.user_name,
+                // createdOn: new Date().toLocaleString()
+                createdOn: response.data.createdOn
+            }
+            // console.log(c)
+            setComments([...comments, c])
+        }
+    }
+        , [handleCommentSubmit])
 
     const created = <><span>{d.toLocaleDateString()}</span>&nbsp;<span>{d.toLocaleTimeString()}</span></>
     const updated = <><span>{upd.toLocaleDateString()}</span>&nbsp;<span>{upd.toLocaleTimeString()}</span></>
@@ -139,7 +242,7 @@ const Post = ({ id, post, history }) => {
                 <div>
                     {created}
                 </div>
-                <div><Link to="/login">{post.username}</Link></div>
+                <div><Link to={`/user/${post.username}`}>{post.username}</Link></div>
                 <div>
                     <FormControlLabel
                         control={
@@ -153,7 +256,8 @@ const Post = ({ id, post, history }) => {
                         label={likedUsersNum}
                     />
                 </div>
-                <Commentlist comments={post.comments} />
+                <Commentlist comments={comments} />
+                {userDetails.user ? <NewComment post_id={id} onInput={handleCommentInput} newComment={newComment} onComment={handleComment} /> : null}
                 {/* {isLiked ? <p>liked</p> : <p>not liked</p>} */}
 
                 <hr />
