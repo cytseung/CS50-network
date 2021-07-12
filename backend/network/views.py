@@ -187,6 +187,13 @@ class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
+    def check_user_exist(self, request):
+        username = request.data["username"]
+        if User.objects.filter(username=username).filter(deleted=None).exists():
+            return Response({'exist': True, 'message': 'This username exists.'})
+        return Response({'exist': False, 'message': 'This username does not exist.'})
+       
 
 
 # class UserCreate(generics.CreateAPIView):

@@ -37,7 +37,7 @@ const routes = [
     {
         path:'/*',
         component:NotFound,
-        isPrivate: true,
+        isPrivate: false,
     },
 ]
 

@@ -42,7 +42,7 @@ const NewComment = ({ history, post_id, onInput, onComment, newComment}) => {
     return (
         <div>
             <form >
-                <input id="comment" type="text" value={newComment} placeholder="Leave a comment" onChange={onInput} />
+                <input type="text" value={newComment} placeholder="Leave a comment" onChange={onInput} />
                 <input type="submit" onClick={onComment} hidden />
 
             </form>
