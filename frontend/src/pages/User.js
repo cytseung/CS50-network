@@ -23,11 +23,12 @@ const User = ({ history }) => {
     const [currentPage, setCurrentPage] = React.useState(1)
     const [exists, SetExists] = React.useState(false);
     const [followersNum, setFollowersNum] = React.useState(0);
+    const [followingNum, setFollowingNum] = React.useState(0);
     const [followingState, followDispatch] = React.useReducer(
         followReducer,
         followInitialState
     )
-    
+
 
     const check_username = React.useCallback(async () => {
         const payload = { username: username }
@@ -80,19 +81,22 @@ const User = ({ history }) => {
 
     React.useEffect(() => {
 
-        async function check_isFollowing() {
-            if (!userDetails.user)
-                return
+        async function check_isFollowing_followersNum_followingNum() {
             try {
                 let response = await axios.get(`${API_ROOT}user/${username}/`);
+                setFollowersNum(response.data.followers.length);
+                setFollowingNum(response.data.following.length)
+                if (!userDetails.user)
+                    return
                 if (response.data.followers.indexOf(userDetails.user.user_id) !== -1) {
-                    followDispatch({type:"FOLLOWED"});
+                    followDispatch({ type: "FOLLOWED" });
                 }
+                
             } catch (e) {
                 console.log(e)
             }
         }
-        check_isFollowing()
+        check_isFollowing_followersNum_followingNum()
     }, [])
 
     React.useEffect(() => {
@@ -132,7 +136,7 @@ const User = ({ history }) => {
             }
             const followPayload = { follow: v };
             const response = await toggle_follow(followDispatch, followPayload, username);
-            return response 
+            return response
         } catch (e) {
             console.log(e)
         }
@@ -145,18 +149,26 @@ const User = ({ history }) => {
         }
         try {
             const response = await toggleFollow(!followingState.isFollowing);
-            if (response.status === 200 && followingState.isFollowing === true){
-                setFollowersNum(prev=>prev+1);
-            }else if(response.status === 200 && followingState.isFollowing === false){
-                setFollowersNum(prev=>prev-1);
-            }else{
+            if (response.status === 200 && response.data.status === `following user ${username}`) {
+                setFollowersNum(prev => prev + 1);
+            } else if (response.status === 200 && response.data.status === `unfollowed user ${username}`) {
+                setFollowersNum(prev => prev - 1);
+            } else {
                 throw new Error();
             }
-        }catch(e){
+        } catch (e) {
             console.log(e);
         }
     }
 
+    // React.useEffect(()=>{
+    //     async function get_followers_following(){
+    //         try{
+    //             await axios.get()
+    //         }
+    //     }
+    //     get_followers_following();
+    // },[])
     if (exists) {
         return (
 
@@ -164,8 +176,9 @@ const User = ({ history }) => {
                 <Navbar />
                 <h2>Profile Page</h2>
                 <h2>{username}</h2>
-                {followingState.isFollowing ? <p>Following</p> : <p>Not Following</p>}
-                {userDetails.user
+                {/* {followingState.isFollowing ? <p>Following</p> : <p>Not Following</p>} */}
+                <div><span>No. of Followers: {followersNum}</span>&nbsp;&nbsp;<span>No. of Users Followed: {followingNum}</span></div>
+                {userDetails.user && userDetails.user.user_name !== username
                     ? <Button variant="contained" color="primary" onClick={handleFollow}>
                         {followingState.followButtonText}
                     </Button>
