@@ -153,7 +153,7 @@ class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
         return serializer_class
 
     @action(detail=True, methods=['put'], permission_classes=[permissions.IsAuthenticated])
-    def toggle_follow_user(self, request, pk=None):
+    def toggle_follow_user(self, request, username=None):
         user = self.get_object()
         if user.deleted != None:
             raise NotFound()

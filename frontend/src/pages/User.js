@@ -10,18 +10,24 @@ import { fetchData } from '../fetchposts/actions'
 import { initialState as postsInitialState, postsReducer } from '../fetchposts/reducer';
 import Paginator from '../components/Paginator';
 import Postlist from '../components/Postlist';
-
-const User = () => {
+import Button from '@material-ui/core/Button'
+import { initialState as followInitialState, followReducer } from '../follow/reducer'
+import { toggle_follow } from '../follow/actions'
+const User = ({ history }) => {
     const userDetails = useAuthState();
     let { username } = useParams();
-    const [posts, dispatch] = React.useReducer(
+    const [posts, postsDispatch] = React.useReducer(
         postsReducer,
         postsInitialState
     );
     const [currentPage, setCurrentPage] = React.useState(1)
     const [exists, SetExists] = React.useState(false);
-    const [followersNum, setFollowersNum] = React.useState();
-    const [isFollowing, setIsFollowing] = React.useState(false);
+    const [followersNum, setFollowersNum] = React.useState(0);
+    const [followingState, followDispatch] = React.useReducer(
+        followReducer,
+        followInitialState
+    )
+    
 
     const check_username = React.useCallback(async () => {
         const payload = { username: username }
@@ -49,7 +55,7 @@ const User = () => {
     const fetch = async () => {
         const following = false;
         try {
-            await fetchData(dispatch, currentPage, following, username);
+            await fetchData(postsDispatch, currentPage, following, username);
         } catch (e) {
             console.log(e);
         }
@@ -80,13 +86,14 @@ const User = () => {
             try {
                 let response = await axios.get(`${API_ROOT}user/${username}/`);
                 if (response.data.followers.indexOf(userDetails.user.user_id) !== -1) {
-                    setIsFollowing(true);
+                    followDispatch({type:"FOLLOWED"});
                 }
             } catch (e) {
                 console.log(e)
             }
         }
-        check_isFollowing()}, [])
+        check_isFollowing()
+    }, [])
 
     React.useEffect(() => {
         async function check_and_fetch() {
@@ -103,9 +110,7 @@ const User = () => {
         fetchPosts();
     }, [currentPage, exists])
 
-    React.useEffect(() => {
 
-    }, [])
 
     // React.useEffect(() => {
     //     let response = check_username()
@@ -117,6 +122,40 @@ const User = () => {
     //         />
     // }, [currentPage])
 
+    const toggleFollow = async (follow) => {
+        try {
+            let v = false;
+            if (follow) {
+                v = "True";
+            } else {
+                v = "False";
+            }
+            const followPayload = { follow: v };
+            const response = await toggle_follow(followDispatch, followPayload, username);
+            return response 
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    const handleFollow = async (event) => {
+        if (!userDetails.user) {
+            alert("You are not logged in.")
+            history.push("/login");
+            return null;
+        }
+        try {
+            const response = await toggleFollow(!followingState.isFollowing);
+            if (response.status === 200 && followingState.isFollowing === true){
+                setFollowersNum(prev=>prev+1);
+            }else if(response.status === 200 && followingState.isFollowing === false){
+                setFollowersNum(prev=>prev-1);
+            }else{
+                throw new Error();
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
 
     if (exists) {
         return (
@@ -125,8 +164,13 @@ const User = () => {
                 <Navbar />
                 <h2>Profile Page</h2>
                 <h2>{username}</h2>
-                {isFollowing?<p>Following</p>:<p>Not Following</p>}
-                {userDetails.user ? <button>Follow</button> : null}
+                {followingState.isFollowing ? <p>Following</p> : <p>Not Following</p>}
+                {userDetails.user
+                    ? <Button variant="contained" color="primary" onClick={handleFollow}>
+                        {followingState.followButtonText}
+                    </Button>
+                    : null}
+
                 {posts.isError && <p>Something went wrong...</p>}
                 {posts.isLoading ? (<p>Loading...</p>) : (<Postlist postlist={posts.data} />)}
 
