@@ -5,6 +5,9 @@ import { Link } from 'react-router-dom';
 import { initialState as registerInitialState, registerReducer } from '../register/reducer';
 import { register } from '../register/actions';
 
+import { TextField } from '@material-ui/core';
+import { Button } from '@material-ui/core';
+import styles from './Login.module.css'
 const Register = (props) => {
     const [username, setUsername] = React.useState('');
     const [email, setEmail] = React.useState('');
@@ -38,39 +41,47 @@ const Register = (props) => {
             {state.isLoading ? (<p>Loading...</p>):null}
             <form action="" method="post">
                 <div >
-                    <input
+                    <TextField
                         autoFocus
                         type="text"
                         name="username"
                         placeholder="Username"
                         onChange={(e) => setUsername(e.target.value)}
+                        variant="outlined"
+                        className={styles.inputField}
                     />
                 </div>
                 <div >
-                    <input
+                    <TextField
                         type="email"
                         name="email"
                         placeholder="Email Address"
                         onChange={(e) => setEmail(e.target.value)}
+                        variant="outlined"
+                        className={styles.inputField}
                     />
                 </div>
                 <div >
-                    <input
+                    <TextField
                         type="password"
                         name="password"
                         placeholder="Password"
                         onChange={(e) => setPassword(e.target.value)}
+                        variant="outlined"
+                        className={styles.inputField}
                     />
                 </div>
                 <div >
-                    <input
+                    <TextField
                         type="password"
                         name="confirmation"
                         placeholder="Confirm Password"
                         onChange={(e) => setConfirm(e.target.value)}
+                        variant="outlined"
+                        className={styles.inputField}
                     />
                 </div>
-                <input type="submit" value="Register" onClick={handleRegister} disabled={state.isLoading} />
+                <Button type="submit" onClick={handleRegister} disabled={state.isLoading} variant="contained" color="primary" >Register</Button>
             </form>
 
             Already have an account? <Link to="login">Log In here.</Link>

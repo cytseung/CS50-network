@@ -10,7 +10,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Favorite from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import Button from '@material-ui/core/Button';
-
+import { TextField } from '@material-ui/core'
+import Card from '@material-ui/core/CardContent';
 import { useAuthState } from '../auth/context';
 
 const Post = ({ id, post, history }) => {
@@ -232,12 +233,12 @@ const Post = ({ id, post, history }) => {
     }
 
     return (
-        <>
+        <Card variant="outlined">
             <div>
                 <span>
                     {isEditing
                         ? <form >
-                            <p><textarea id="edit" type="text" autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} /></p>
+                            <p><TextField id="edit" type="text" autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} /></p>
                             <p><Button type="submit" variant="contained" onClick={handleEditSubmit} disabled={!editText}>Submit</Button></p>
                         </form>
                         : (<h3>{titleText}</h3>)}
@@ -273,7 +274,7 @@ const Post = ({ id, post, history }) => {
 
                 <hr />
             </div>
-        </>
+        </Card>
     )
 }
 const PostwithRouter = withRouter(Post)
