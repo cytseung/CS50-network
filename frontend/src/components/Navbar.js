@@ -3,6 +3,7 @@ import axios from 'axios'
 import { Link, withRouter } from "react-router-dom"
 import { logout } from '../auth/actions';
 import { useAuthState, useAuthDispatch } from '../auth/context';
+import Button from '@material-ui/core/Button';
 
 const Navbar = (props) => {
     const dispatch = useAuthDispatch();
@@ -28,35 +29,36 @@ const Navbar = (props) => {
 
     return (
         <div>
-            <nav>
-                <Link to="">Network</Link>
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossOrigin="anonymous"></link>
+            <nav className="navbar navbar-expand-lg navbar-light bg-light">
+                <Link className="navbar-brand" to="">Network</Link>
 
                 <div>
-                    <ul>
+                    <ul className="navbar-nav mr-auto">
                         {userDetails.user ?
-                            <li>
-                                <p>{userDetails.user.user_name}</p>
+                            <li className="nav-item">
+                                <Link className="nav-link" to={`/user/${userDetails.user.user_name}`}>{userDetails.user.user_name}</Link>
                             </li>
                             : null}
-                        <li>
-                            <Link to="/">All Posts</Link>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/">All Posts</Link>
                         </li>
                         {userDetails.user ? (
                             <>
-                                <li>
-                                    <Link to="/following">Following</Link>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/following">Following</Link>
                                 </li>
-                                <li>
-                                    <button onClick={handleLogout}>Log Out</button>
+                                <li className="nav-item">
+                                    <Button className="nav-link" onClick={handleLogout}>Log Out</Button>
                                 </li>
                             </>
                         ) : (
                             <>
-                                <li>
-                                    <Link to="/login">Log In</Link>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/login">Log In</Link>
                                 </li>
-                                <li >
-                                    <Link to="/register">Register</Link>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/register">Register</Link>
                                 </li>
                             </>
                         )}
