@@ -15,7 +15,6 @@ import Card from '@material-ui/core/CardContent';
 import { useAuthState } from '../auth/context';
 
 const Post = ({ id, post, history }) => {
-    // console.log("Post rendered")
     const d = new Date(post.createdOn);
     const upd = new Date(post.updated)
     const userDetails = useAuthState();
@@ -119,11 +118,6 @@ const Post = ({ id, post, history }) => {
 
     }
 
-    // React.useEffect(() => {
-    //     // console.log(isLiked)
-
-    // }, [isLiked])
-
     const postComment = async () => {
         const payload = { text: newCommentSubmit, post: id }
         try {
@@ -141,32 +135,6 @@ const Post = ({ id, post, history }) => {
         setNewComment(event.target.value);
     }
 
-    // const handleComment = async (event) => {
-    //     event.preventDefault();
-    //     if (newComment === "")
-    //         return;
-    //     if (!userDetails.user) {
-    //         alert("You are not logged in.")
-    //         history.push("/login");
-    //         return;
-
-    //     }
-    //     try {
-    //         const response = await postComment();
-    //         if (response.status === 201) {
-    //             setNewCommentSubmit(newComment);
-    //             setNewComment("");
-
-    //         }
-    //         else {
-    //             console.log("An error occurred")
-    //         }
-
-    //     } catch (e) {
-    //         console.log(e);
-
-    //     }
-    // }
     const handleComment = (event) => {
         // console.log("handleComment called")
         event.preventDefault();
@@ -243,10 +211,6 @@ const Post = ({ id, post, history }) => {
                         </form>
                         : (<h3>{titleText}</h3>)}
                     {d.toLocaleTimeString() !== upd.toLocaleTimeString() || d.toLocaleDateString() !== upd.toLocaleDateString() ? <p>Last updated {updated}</p> : null}
-                    {/* {userDetails.user && userDetails.user.user_id === post.user_id
-                        ? <button onClick={handleEdit}>Edit</button>
-                        : null
-                    } */}
                     {editButton}
 
 
@@ -270,7 +234,6 @@ const Post = ({ id, post, history }) => {
                 </div>
                 <Commentlist comments={comments} />
                 {userDetails.user ? <NewComment post_id={id} onInput={handleCommentInput} newComment={newComment} onComment={handleComment} /> : null}
-                {/* {isLiked ? <p>liked</p> : <p>not liked</p>} */}
 
                 <hr />
             </div>

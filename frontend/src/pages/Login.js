@@ -18,12 +18,10 @@ const Login = (props) => {
         let payload = { username: username, password: password };
         try {
             let response = await loginUser(dispatch, payload);
-            // console.log(response)
             if (response === undefined) throw new Error();
             if (!response.user_id) return
             props.history.push('/')
         } catch (error) {
-            // console.log(error);
         }
     }
     return (

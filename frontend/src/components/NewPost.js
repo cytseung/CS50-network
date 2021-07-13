@@ -6,21 +6,6 @@ import { TextField } from '@material-ui/core'
 
 const NewPost = ({ onPost, onInput, text }) => {
     const classes = useStyles();
-    // const [text, setText] = React.useState("");
-    // console.log(text)
-
-    // const handlePost = async (e) => {
-    //     e.preventDefault();
-    //     const payload = { text: text };
-    //     try {
-    //         const response = await axios.post(`${API_ROOT}post/`, payload);
-    //         if (response === undefined) throw new Error();
-    //         console.log(response)
-
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
     return (
         <>
             <h2>New Post</h2>

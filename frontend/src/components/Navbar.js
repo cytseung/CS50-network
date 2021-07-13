@@ -9,23 +9,18 @@ const Navbar = (props) => {
     const dispatch = useAuthDispatch();
     const userDetails = useAuthState();
     if (userDetails.token) {
-        // console.log(userDetails.token)
         axios.defaults.headers.common['Authorization'] = `Bearer ${userDetails.token}`;
     } else {
-        // console.log(456)
         delete axios.defaults.headers.common["Authorization"];
     }
     const handleLogout = async () => {
         try {
             await logout(dispatch);
-            // console.log(props)
-            // return (<Redirect to='/login' />)
             props.history.push('/login');
         } catch (e) {
             console.log(e);
         }
     }
-    // console.log(userDetails)
 
     return (
         <div>

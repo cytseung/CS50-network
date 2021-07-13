@@ -115,17 +115,6 @@ const User = ({ history }) => {
     }, [currentPage, exists])
 
 
-
-    // React.useEffect(() => {
-    //     let response = check_username()
-    //     if (response === true)
-    //         fetch()
-    //     else
-    //         return <Redirect
-    //             to={{ pathname: "/page-not-found" }}
-    //         />
-    // }, [currentPage])
-
     const toggleFollow = async (follow) => {
         try {
             let v = false;
@@ -161,14 +150,7 @@ const User = ({ history }) => {
         }
     }
 
-    // React.useEffect(()=>{
-    //     async function get_followers_following(){
-    //         try{
-    //             await axios.get()
-    //         }
-    //     }
-    //     get_followers_following();
-    // },[])
+
     if (exists) {
         return (
 
