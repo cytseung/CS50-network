@@ -9,6 +9,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Favorite from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
+import Button from '@material-ui/core/Button';
 
 import { useAuthState } from '../auth/context';
 
@@ -224,9 +225,9 @@ const Post = ({ id, post, history }) => {
     let editButton = null;
     if (userDetails.user && userDetails.user.user_id === post.user_id) {
         if (isEditing) {
-            editButton = <><button onClick={handleEdit}>Cancel</button></>
+            editButton = <><Button color="secondary" onClick={handleEdit}>Cancel</Button ></>
         } else {
-            editButton = <><button onClick={handleEdit}>Edit</button></>
+            editButton = <><Button color="primary" onClick={handleEdit}>Edit</Button></>
         }
     }
 
@@ -237,7 +238,7 @@ const Post = ({ id, post, history }) => {
                     {isEditing
                         ? <form >
                             <p><textarea id="edit" type="text" autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} /></p>
-                            <p><button type="submit" variant="contained" color="primary" onClick={handleEditSubmit} disabled={!editText}>Submit</button></p>
+                            <p><Button type="submit" variant="contained" onClick={handleEditSubmit} disabled={!editText}>Submit</Button></p>
                         </form>
                         : (<h3>{titleText}</h3>)}
                     {d.toLocaleTimeString() !== upd.toLocaleTimeString() || d.toLocaleDateString() !== upd.toLocaleDateString() ? <p>Last updated {updated}</p> : null}
