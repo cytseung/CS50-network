@@ -33,7 +33,6 @@ class DefaultsMixin(object):
     )
     filter_backends = (
         DjangoFilterBackend,
-        # filters.SearchFilter,
     )
 
 
@@ -42,7 +41,6 @@ class PostViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = Post.objects.filter(deleted=None).order_by('-createdOn')
     serializer_class = PostSerializer
     filter_class = PostFilter
-    # searchfields = ('user', )
 
     permission_classes = [(DisableOtherMethods & IsOwnerOrReadOnly)|IsAdminUser]
 
@@ -114,7 +112,6 @@ class CommentViewSet(DefaultsMixin, viewsets.ModelViewSet):
     queryset = Comment.objects.filter(deleted=None).order_by('createdOn')
     serializer_class = CommentSerializer
     filter_class = CommentFilter
-    # searchfields = ('post', )
 
     permission_classes=[(DisableOtherMethods&NotEditable)|IsAdminUser]
 
@@ -199,45 +196,6 @@ class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
         return Response({'exist': False, 'message': 'This username does not exist.'})
        
 
-
-# class UserCreate(generics.CreateAPIView):
-#     queryset = User.objects.filter(deleted=None)
-#     serializer_class = UserSerializer
-
-
-# def index(request):
-#     return render(request, "network/index.html")
-
-# class LoginView(APIView):
-#     permissions_classes = []
-#     def post(self, request,):
-#         username = request.data.get("username")
-#         password = request.data.get("password")
-#         user = authenticate(username=username, password=password)
-#         if user:
-#             return Response({"token": user.auth_token.key})
-#         else:
-#             return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
-
-# def login_view(request):
-#     if request.method == "POST":
-
-#         # Attempt to sign user in
-#         username = request.POST["username"]
-#         password = request.POST["password"]
-#         user = authenticate(request, username=username, password=password)
-
-#         # Check if authentication successful
-#         if user is not None:
-#             login(request, user)
-#             return HttpResponseRedirect(reverse("index"))
-#         else:
-#             return render(request, "network/login.html", {
-#                 "message": "Invalid username and/or password."
-#             })
-#     else:
-#         return render(request, "network/login.html")
-
 class LogoutView(APIView):
     # permissions_classes = [permissions.IsAuthenticated]
     def post(self,request,):
@@ -263,36 +221,5 @@ class CustomAuthToken(ObtainAuthToken):
             'token': token.key,
             'user_id': user.pk,
             'user_name': user.username,
-            # 'email': user.email
         })
 
-# def logout_view(request):
-#     logout(request)
-#     return HttpResponseRedirect(reverse("index"))
-
-
-# def register(request):
-#     if request.method == "POST":
-#         username = request.POST["username"]
-#         email = request.POST["email"]
-
-#         # Ensure password matches confirmation
-#         password = request.POST["password"]
-#         confirmation = request.POST["confirmation"]
-#         if password != confirmation:
-#             return render(request, "network/register.html", {
-#                 "message": "Passwords must match."
-#             })
-
-#         # Attempt to create new user
-#         try:
-#             user = User.objects.create_user(username, email, password)
-#             user.save()
-#         except IntegrityError:
-#             return render(request, "network/register.html", {
-#                 "message": "Username already taken."
-#             })
-#         login(request, user)
-#         return HttpResponseRedirect(reverse("index"))
-#     else:
-#         return render(request, "network/register.html")
