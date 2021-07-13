@@ -14,13 +14,14 @@ import Postlist from '../components/Postlist';
 const User = () => {
     const userDetails = useAuthState();
     let { username } = useParams();
-    const [isLoading, setIsLoading] = React.useState(false);
     const [posts, dispatch] = React.useReducer(
         postsReducer,
         postsInitialState
     );
     const [currentPage, setCurrentPage] = React.useState(1)
     const [exists, SetExists] = React.useState(false);
+    const [followersNum, setFollowersNum] = React.useState();
+    const [isFollowing, setIsFollowing] = React.useState(false);
 
     const check_username = React.useCallback(async () => {
         const payload = { username: username }
@@ -55,36 +56,56 @@ const User = () => {
     }
 
     const checkuser_fetch = React.useCallback(async () => {
-        setIsLoading(true);
-        if (userDetails.user) {
-            await check_username();
+        // if (userDetails.user) {
+        await check_username();
+        console.log(exists)
+        if (exists) {
+            await fetch()
+        } else {
             console.log(exists)
-            if (exists) {
-                await fetch()
-            } else {
-                console.log(exists)
-                return (
-                    <Redirect
-                        to={{ pathname: "/page-not-found" }}
-                    />
-                )
+            return (
+                <Redirect
+                    to={{ pathname: "/page-not-found" }}
+                />
+            )
+        }
+        // }
+    }, [check_username, username, exists])
+
+    React.useEffect(() => {
+
+        async function check_isFollowing() {
+            if (!userDetails.user)
+                return
+            try {
+                let response = await axios.get(`${API_ROOT}user/${username}/`);
+                if (response.data.followers.indexOf(userDetails.user.user_id) !== -1) {
+                    setIsFollowing(true);
+                }
+            } catch (e) {
+                console.log(e)
             }
         }
-    }, [check_username, username, exists])
+        check_isFollowing()}, [])
 
     React.useEffect(() => {
         async function check_and_fetch() {
             await checkuser_fetch();
         }
         check_and_fetch();
-    }, [checkuser_fetch])
+    }, [checkuser_fetch, exists])
 
     React.useEffect(() => {
         async function fetchPosts() {
-            await fetch();
+            if (exists)
+                await fetch();
         }
         fetchPosts();
-    }, [currentPage])
+    }, [currentPage, exists])
+
+    React.useEffect(() => {
+
+    }, [])
 
     // React.useEffect(() => {
     //     let response = check_username()
@@ -97,23 +118,29 @@ const User = () => {
     // }, [currentPage])
 
 
+    if (exists) {
+        return (
 
-    return (
-        <div>
-            <Navbar />
-            <h2>Profile Page</h2>
-            <h2>{username}</h2>
-            {posts.isError && <p>Something went wrong...</p>}
-            {posts.isLoading ? (<p>Loading...</p>) : (<Postlist postlist={posts.data} />)}
+            <div>
+                <Navbar />
+                <h2>Profile Page</h2>
+                <h2>{username}</h2>
+                {isFollowing?<p>Following</p>:<p>Not Following</p>}
+                {userDetails.user ? <button>Follow</button> : null}
+                {posts.isError && <p>Something went wrong...</p>}
+                {posts.isLoading ? (<p>Loading...</p>) : (<Postlist postlist={posts.data} />)}
 
-            <Paginator
-                previousPage={posts.previousPage}
-                nextPage={posts.nextPage}
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-            />
-        </div>
-    )
+                <Paginator
+                    previousPage={posts.previousPage}
+                    nextPage={posts.nextPage}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                />
+            </div>
+        )
+    } else {
+        return <p>This user does not exist</p>
+    }
 }
 
 export default User

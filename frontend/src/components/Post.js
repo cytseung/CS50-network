@@ -13,7 +13,7 @@ import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import { useAuthState } from '../auth/context';
 
 const Post = ({ id, post, history }) => {
-    console.log("Post rendered")
+    // console.log("Post rendered")
     const d = new Date(post.createdOn);
     const upd = new Date(post.updated)
     const userDetails = useAuthState();
@@ -126,7 +126,7 @@ const Post = ({ id, post, history }) => {
         const payload = { text: newCommentSubmit, post: id }
         try {
             const response = await axios.post(`${API_ROOT}comment/`, payload);
-            console.log(response.data)
+            // console.log(response.data)
             if (response === undefined) throw new Error();
             // console.log(response)
             return response;
@@ -135,7 +135,7 @@ const Post = ({ id, post, history }) => {
         }
     }
     const handleCommentInput = (event) => {
-        console.log("handleCommentInput called")
+        // console.log("handleCommentInput called")
         setNewComment(event.target.value);
     }
 
@@ -166,13 +166,13 @@ const Post = ({ id, post, history }) => {
     //     }
     // }
     const handleComment = (event) => {
-        console.log("handleComment called")
+        // console.log("handleComment called")
         event.preventDefault();
         setNewCommentSubmit(newComment);
     }
 
     const handleCommentSubmit = React.useCallback(async (event) => {
-        console.log("handleCommentSubmit called")
+        // console.log("handleCommentSubmit called")
         if (newCommentSubmit === "")
             return;
         if (!userDetails.user) {
@@ -182,7 +182,7 @@ const Post = ({ id, post, history }) => {
 
         }
         try {
-            console.log(newCommentSubmit)
+            // console.log(newCommentSubmit)
             const response = await postComment();
             if (response.status === 201) {
                 setNewComment("");
@@ -200,11 +200,11 @@ const Post = ({ id, post, history }) => {
 
 
     React.useEffect(async () => {
-        console.log("useEffect called")
+        // console.log("useEffect called")
         const response = await handleCommentSubmit();
         if (newCommentSubmit === "")
             return
-        console.log(newCommentSubmit)
+        // console.log(newCommentSubmit)
         if (userDetails.user && response) {
             const c = {
                 text: newCommentSubmit,

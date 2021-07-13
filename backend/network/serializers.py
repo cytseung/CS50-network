@@ -10,7 +10,7 @@ from .models import Post, Comment
 
 User = get_user_model()
 
-class CommentSerializer(serializers.HyperlinkedModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
     user_id = serializers.SerializerMethodField()
     post = PrimaryKeyRelatedField(many=False, queryset = Post.objects.filter(deleted=None))
@@ -23,12 +23,19 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
     def get_user_id(self,obj):
         return obj.user.id
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+
+class UserSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'following', 'followers', 'url', )
-        extra_kwargs={'password':{'write_only':True}, 'following':{'read_only':True},'followers':{'read_only':True}}
-        
+        fields = ('id', 'username', 'email', 'password', 'following', 'followers',  )
+        extra_kwargs={
+            'password':{'write_only':True}, 
+            'following':{'read_only':True},
+            'followers':{'read_only':True},
+            'url': {"lookup_url_kwarg": User.USERNAME_FIELD, "lookup_field":User.USERNAME_FIELD},
+            }
+
     def create(self, validated_data):
         user = User(
             email=validated_data['email'],
@@ -47,7 +54,7 @@ class UserSerializerForUpdate(serializers.ModelSerializer):
 class PasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True)
 
-class PostSerializer(serializers.HyperlinkedModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
     user_id = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)

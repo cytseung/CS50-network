@@ -4,7 +4,7 @@ import Post from './Post'
 
 
 const Postlist = ({postlist}) => {
-    console.log("Post List rendered")
+    // console.log("Post List rendered")
     return postlist.map((post) => {
         // console.log(post)
         return (

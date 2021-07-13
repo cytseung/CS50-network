@@ -132,9 +132,11 @@ class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = UserSerializer
     # permission_classes=[(DisableOtherMethods&NotEditable)|IsAdminUser]
     permission_classes=[permissions.AllowAny]
+    lookup_field=User.USERNAME_FIELD
+    lookup_url_kwarg=User.USERNAME_FIELD
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action == 'create' or self.action == 'check_user_exist':
             permission_classes = [permissions.AllowAny]
         elif self.action == 'destroy':
             permission_classes = [IsAdminUser]
