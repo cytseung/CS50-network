@@ -138,6 +138,8 @@ class UserViewSet(DefaultsMixin, viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'create' or self.action == 'check_user_exist':
             permission_classes = [permissions.AllowAny]
+        elif self.action == 'toggle_follow_user':
+            permission_classes=[permissions.IsAuthenticated]
         elif self.action == 'destroy':
             permission_classes = [IsAdminUser]
         else:
