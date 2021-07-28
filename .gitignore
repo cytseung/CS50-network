@@ -2,6 +2,5 @@ env/
 *.sqlite3
 .vscode/
 *.pyc
-backend/network/migrations/
 to-do.txt
 Screen Recording 2021-07-13 at 9.16.31 PM.mov
